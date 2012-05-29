@@ -42,7 +42,7 @@ BufferData FileReadBuffer::read(size_t size) {
 	return BufferData(ptr, size);
 }
 
-Bit FileReadBuffer::readBit(size_t size)
+Bit FileReadBuffer::readBits(size_t size)
 {
 	Bit retBit;
 
@@ -66,17 +66,6 @@ Bit FileReadBuffer::readBit(size_t size)
 	
 	retBit.add(*((long*)data.buffer), byteCnt); // TODO there will be a bug, read invalid address
 	return retBit;
-}
-
-size_t FileReadBuffer::write(byte* data, size_t size)
-{
-	assert(0);
-	return 0;
-}
-
-size_t FileReadBuffer::writeBit(const Bit& bit) {
-	assert(0);
-	return 0;
 }
 
 void FileReadBuffer::rewind() {
@@ -103,12 +92,7 @@ FileWriteBuffer::~FileWriteBuffer() {
 	fclose(file);
 }
 
-BufferData FileWriteBuffer::read(size_t size) {
-	assert(0);
-	return BufferData();
-}
-
-size_t FileWriteBuffer::write(byte* data, size_t size) {
+size_t FileWriteBuffer::write(const byte* data, size_t size) {
 	assert(size <= capacity);
 	size_t copySize = std::min(size, capacity - (ptr - buffer));
 	
@@ -131,9 +115,4 @@ size_t FileWriteBuffer::writeBit(const Bit& bit)
 	long bitBuffer = bit.bits;
 
 	return 0;
-}
-
-Bit FileWriteBuffer::readBit(size_t size) {
-	assert(0);
-	return Bit();
 }
