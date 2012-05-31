@@ -15,6 +15,6 @@ public:
 	int decompress(IOReader& reader, IOWriter& writer);
 private:
 	void sortCodes(Bit codes[], int indexes[], size_t count);
-	int decode(IOReader& reader, IOWriter& writer, BitCode codes[], size_t codeCnt);
+	int decode(IOReader& reader, IOWriter& writer, BitCode codes[], size_t codeCnt, size_t excessBit);
 };
 #endif

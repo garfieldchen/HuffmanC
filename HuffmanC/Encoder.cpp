@@ -22,6 +22,9 @@ void HuffmanEncoder::writeFile(IOReader& reader, IOWriter& writer, Bit codes[]) 
 		writer.writeBit(codes[((int)(*buff.buffer))]);
 		buff = reader.read(1);
 	}
+
+	header.dummyBits = writer.bitPosition();
+	writer.write((byte*)&header, sizeof(HuffmanFileHeader));
 }
 
 bool HuffmanEncoder::code(IOReader& ioBuffer, Bit codes[]) {
@@ -31,8 +34,10 @@ bool HuffmanEncoder::code(IOReader& ioBuffer, Bit codes[]) {
 	BufferData bufferData = ioBuffer.read(1);
 
 	while(bufferData.size == 1) {
-		stats[*bufferData.buffer] += 1;
+		++ stats[*bufferData.buffer];
 		bufferData = ioBuffer.read(1);
+
+		++srcSize;
 	}
 
 	priority_queue<Node*,vector<Node*>, NodePtrCompare> q;
@@ -73,7 +78,8 @@ bool HuffmanEncoder::code(IOReader& ioBuffer, Bit codes[]) {
 
 		if (!node->left && !node->right) {
 			codes[node->value] = node->bit;
-			cout << node->value << " : " << node->bit.len << " " << node->bit.bits << "  " << node->weight << endl;
+			compressSize += node->bit.len * node->weight / 8;
+			//cout << node->value << " : " << node->bit.len << " " << node->bit.bits << "  " << node->weight << endl;
 		}
 	}
 	return true;

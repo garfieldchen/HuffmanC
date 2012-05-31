@@ -6,7 +6,8 @@
 typedef unsigned char byte;
 
 struct Bit{
-	typedef long BitsType;
+	typedef unsigned long BitsType;
+	enum {BIT_SIZE = sizeof(BitsType) * 8};
 
 	Bit()
 		:bits(0), len(0)
@@ -20,7 +21,7 @@ struct Bit{
 	size_t len;
 
 	void addBit(int b) {
-		assert(len < 64);
+		assert(len < BIT_SIZE);
 		if (b)
 			bits |= 0x1 << len;
 
@@ -33,11 +34,17 @@ struct Bit{
 	}
 
 	void add(const Bit& bit) {
+		assert(len + bit.len <= BIT_SIZE);
 
+		add(bit.bits, bit.len);
 	}
 
 	void add(BitsType bits, size_t size) {
+		assert(len + size <= BIT_SIZE);
 
+		bits <<= size;
+		this->bits |= bits;
+		len += size;
 	}
 
 	bool operator<(Bit& b) {

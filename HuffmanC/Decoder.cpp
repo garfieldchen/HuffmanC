@@ -17,17 +17,23 @@ int HuffmanDecoder::decompress(IOReader& reader, IOWriter& writer) {
 	}
 	sort(codes, codes + 256);
 
-	return decode(reader, writer, codes, 256);		
+	return decode(reader, writer, codes, 256, header.dummyBits);		
 }
 
-int HuffmanDecoder::decode(IOReader& reader, IOWriter& writer, BitCode codes[], size_t codeCnt) {
+int HuffmanDecoder::decode(IOReader& reader, IOWriter& writer, BitCode codes[], size_t codeCnt, size_t excessBit) {
+	const size_t fileSize = reader.size() - sizeof(HuffmanFileHeader);
 	const size_t minCodeLength = codes[0].bit.len;
 
-	while(true) {
+	const __int64 availableBits = excessBit ? ((fileSize -1 ) * 8 + excessBit) : fileSize * 8;
+	__int64 consumeBits = 0;
+
+	while(consumeBits < availableBits) {
 		size_t codeLength = minCodeLength;
 		Bit data = reader.readBits(codeLength);
 		if (data.len)
 			return 0;
+
+		consumeBits += data.len;
 
 		bool find = false;
 
@@ -38,6 +44,8 @@ int HuffmanDecoder::decode(IOReader& reader, IOWriter& writer, BitCode codes[], 
 
 				if (appendBits.len != bit.len - codeLength)
 					return 1;
+
+				consumeBits += appendBits.len;
 
 				data.add(appendBits);
 				data.len = bit.len;

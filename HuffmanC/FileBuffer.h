@@ -21,23 +21,29 @@ public:
 	virtual Bit readBits(size_t bits) = 0;
 
 	virtual void rewind() = 0;
+	virtual size_t bitPosition() = 0;
+	virtual size_t size() = 0;
 };
 
 class IOWriter {
 public:
 	virtual size_t write(const byte* data, size_t size) = 0;
 	virtual size_t writeBit(const Bit& bit) = 0;
+
+	virtual size_t bitPosition() = 0;
 };
 
 class FileReadBuffer
 	:public IOReader
 {
 public:
-	FileReadBuffer(const char* fn, size_t bufferSize = 1024* 1024 * 1024);
+	FileReadBuffer(const char* fn, size_t bufferSize = 1024* 1024);
 	~FileReadBuffer();
 
 	BufferData read(size_t size);
 	Bit readBits(size_t size);
+
+	size_t bitPosition() { return bitOffset; }
 		
 	void rewind();
 	size_t size();
@@ -54,17 +60,21 @@ class FileWriteBuffer
 	:public IOWriter
 {
 public:
-	FileWriteBuffer(const char* fn, size_t bufferSize = 1024* 1024 * 1024);
+	FileWriteBuffer(const char* fn, size_t bufferSize = 1024* 1024);
 	~FileWriteBuffer();
 
 	size_t write(const byte* data, size_t size);
 	size_t writeBit(const Bit& bit);
 
+	size_t bitPosition() { return bitOffset; }
+
+	void rewind();
+
 	byte* buffer;
 	byte* ptr;
 	const size_t capacity;
 	FILE* file;
-	size_t byteOffset;
+	size_t bitOffset;
 };
 
 #endif

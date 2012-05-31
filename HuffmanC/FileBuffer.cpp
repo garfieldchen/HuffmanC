@@ -74,6 +74,16 @@ void FileReadBuffer::rewind() {
 	realSize = 0;
 	bitOffset = 0;
 }
+
+size_t FileReadBuffer::size() {
+	size_t pos = ftell(file);
+	fseek(file, 0, SEEK_END);
+	size_t fileSize = ftell(file);
+	if (pos != fileSize)
+		fseek(file, pos, SEEK_SET);
+
+	return fileSize;
+}
 ///////////////////////
 FileWriteBuffer::FileWriteBuffer(const char* fn, size_t bufferSize)
 	:capacity(bufferSize)
@@ -81,7 +91,7 @@ FileWriteBuffer::FileWriteBuffer(const char* fn, size_t bufferSize)
 	buffer = (byte*)malloc(capacity);
 	file = fopen(fn, "wb+");
 	ptr = buffer;
-	byteOffset = 0;
+	bitOffset = 0;
 }
 
 FileWriteBuffer::~FileWriteBuffer() {
@@ -110,9 +120,13 @@ size_t FileWriteBuffer::write(const byte* data, size_t size) {
 	return size;
 }
 
+void FileWriteBuffer::rewind() {
+	fseek(file, 0, SEEK_SET);
+	ptr = buffer;
+	bitOffset = 0;
+}
+
 size_t FileWriteBuffer::writeBit(const Bit& bit)
 {
-	long bitBuffer = bit.bits;
-
 	return 0;
 }
