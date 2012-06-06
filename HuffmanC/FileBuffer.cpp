@@ -19,6 +19,7 @@ FileReadBuffer::FileReadBuffer(const char* fn, size_t bufferSize)
 		buffer = 0;
 
 	ptr = buffer;
+	bitPtr = ptr;
 }
 
 FileReadBuffer::~FileReadBuffer() {
@@ -56,7 +57,7 @@ Bit FileReadBuffer::readBits(size_t size)
 		const size_t availableCnt = 8 - bitOffset;
 		const size_t usedCnt = std::min(size, availableCnt);
 		
-		retBit.add((long)(*ptr) >> bitOffset, usedCnt);
+		retBit.add((long)(*bitPtr) >> bitOffset, usedCnt);
 		bitOffset = (bitOffset + usedCnt) % 8;
 
 		if (size <= availableCnt)
@@ -69,6 +70,8 @@ Bit FileReadBuffer::readBits(size_t size)
 	BufferData data = read(byteCnt);
 	if (data.size < byteCnt)
 		return Bit();
+
+	bitPtr = data.buffer;
 	bitOffset = size % 8;
 	
 	retBit.add(*((unsigned long*)data.buffer), size); // TODO there will be a bug, read invalid address
@@ -80,6 +83,7 @@ void FileReadBuffer::rewind() {
 	ptr = buffer;
 	realSize = 0;
 	bitOffset = 0;
+	bitPtr = ptr;
 }
 
 size_t FileReadBuffer::size() {

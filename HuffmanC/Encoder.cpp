@@ -7,8 +7,6 @@ bool HuffmanEncoder::compress(IOReader& reader, IOWriter& writer) {
 	Bit codes[256];
 	if (!code(reader, codes))
 		return false;
-	printCodes(codes, 256);
-
 	writeFile(reader, writer, codes);
 	return true;
 }
@@ -22,12 +20,9 @@ void HuffmanEncoder::writeFile(IOReader& reader, IOWriter& writer, Bit codes[]) 
 	memcpy(header.codes, codes, sizeof(header.codes));
 	writer.write((const byte*)&header, sizeof(HuffmanFileHeader));
 
-	cout << "writing ....." << endl;
 	BufferData buff = reader.read(1);
 	while (buff.size == 1) {
 		writer.writeBit(codes[((int)(*buff.buffer))]);
-		Bit& bit = codes[((int)(*buff.buffer))];
-		cout << bit.len << "  : " << bit.bits << endl;
 		buff = reader.read(1);
 	}
 

@@ -55,6 +55,7 @@ public:
 	size_t realSize;
 	FILE* file;
 	size_t bitOffset;
+	byte* bitPtr;
 };
 
 class FileWriteBuffer

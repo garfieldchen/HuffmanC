@@ -39,14 +39,13 @@ struct Bit{
 		add(bit.bits, bit.len);
 	}
 
-	void add(BitsType bits, size_t size) {
+	void add(BitsType bs, size_t size) {
 		assert(len + size <= BIT_SIZE);
 
-
-		bits = bits & (~(-1 << size));
+		bs = bs & (~(-1 << size));
 		if (len > 0)
-			bits <<= len;
-		this->bits |= bits;
+			bs <<= len;
+		bits |= bs;
 		len += size;
 	}
 
@@ -61,11 +60,5 @@ struct HuffmanFileHeader{
 	int dummyBits;
 	Bit codes[256];
 };
-
-#include <iostream>
-using namespace std;
-
-void printCodes(const Bit bit[], size_t count);
-
 #endif
 

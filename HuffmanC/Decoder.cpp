@@ -3,10 +3,6 @@
 #include <algorithm>
 using std::sort;
 
-#include <iostream>
-using std::cout;
-using std::endl;
-
 void printCodes(const Bit bit[], size_t count)
 {
 	BitCode codes[256];
@@ -16,8 +12,6 @@ void printCodes(const Bit bit[], size_t count)
 	}
 
 	sort(codes, codes + count);
-	for (size_t i = 0; i < count; ++i)
-		cout << (int)codes[i].value << "  " << codes[i].bit.bits << "  :  " << codes[i].bit.len << endl;
 }
 
 int HuffmanDecoder::decompress(IOReader& reader, IOWriter& writer) {
@@ -29,12 +23,9 @@ int HuffmanDecoder::decompress(IOReader& reader, IOWriter& writer) {
 	memcpy(&header, data.buffer, data.size);
 	BitCode codes[256];
 	for (size_t i = 0; i< 256; ++i) {
-		codes[i].bit  = ((Bit*)data.buffer)[i];
+		codes[i].bit  = header.codes[i];
 		codes[i].value  = i;
 	}
-
-	cout << "************************************" << endl;
-	printCodes(header.codes, 256);
 	sort(codes, codes + 256);
 
 	return decode(reader, writer, codes, 256, header.dummyBits);		
@@ -53,8 +44,6 @@ int HuffmanDecoder::decode(IOReader& reader, IOWriter& writer, BitCode codes[], 
 
 	const __int64 availableBits = excessBit ? ((fileSize -1 ) * 8 + excessBit) : fileSize * 8;
 	__int64 consumeBits = 0;
-
-	cout << "decoding ....... "  << endl;
 
 	while(consumeBits < availableBits) {
 		size_t codeLength = minCodeLength;
@@ -82,7 +71,6 @@ int HuffmanDecoder::decode(IOReader& reader, IOWriter& writer, BitCode codes[], 
 			}			
 
 			if (bit.bits == data.bits) {
-				cout << bit.len << "  : " << bit.bits << endl;
 				writer.write(&(codes[i].value), 1);
 				find = true;
 				break;
