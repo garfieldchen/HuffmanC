@@ -33,6 +33,7 @@ private:
 	void writeFile(IOReader& reader, IOWriter& writer, Bit codes[]);
 	bool code(IOReader& ioBuffer, Bit codes[]);
 
+public:
 	size_t srcSize;
 	size_t compressSize;
 };

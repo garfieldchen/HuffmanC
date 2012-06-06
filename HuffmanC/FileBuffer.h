@@ -31,6 +31,7 @@ public:
 	virtual size_t writeBit(const Bit& bit) = 0;
 
 	virtual size_t bitPosition() = 0;
+	virtual void rewind() = 0;
 };
 
 class FileReadBuffer
@@ -60,7 +61,7 @@ class FileWriteBuffer
 	:public IOWriter
 {
 public:
-	FileWriteBuffer(const char* fn, size_t bufferSize = 1024* 1024);
+	FileWriteBuffer(const char* fn, size_t bufferSize = 1024 * 1024);
 	~FileWriteBuffer();
 
 	size_t write(const byte* data, size_t size);
@@ -69,6 +70,8 @@ public:
 	size_t bitPosition() { return bitOffset; }
 
 	void rewind();
+	void flush();
+
 
 	byte* buffer;
 	byte* ptr;
